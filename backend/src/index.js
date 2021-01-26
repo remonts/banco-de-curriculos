@@ -7,12 +7,13 @@ app.use(express.json());
 const myApis = [];
 
 app.get('/api', (request, response) => {
-    //const { title, owner } = request.query;
+    const { name } = request.query;
 
-    //console.log(title);
-    //console.log(owner);
+    const results = name 
+        ? myApis.filter(api => api.name.includes(name))
+        : myApis;
 
-    return response.json(myApis);
+    return response.json(results); 
 });
 
 app.post('/api', (request, response) => {
@@ -32,7 +33,7 @@ app.put('/api/:id', (request, response) => {
     const apiIndex = myApis.findIndex(api => api.id === id);
 
     if (apiIndex < 0) {
-        return response.status(400).json({ error: 'Project not found.' });
+        return response.status(400).json({ error: 'Item not found.' });
     }
 
     const api = {
@@ -47,10 +48,17 @@ app.put('/api/:id', (request, response) => {
 });
 
 app.delete('/api/:id', (request, response) => {
-    return response.json([
-        'Usuário 2',
-        'Usuário 3',
-    ]);
+    const { id } = request.params;
+
+    const apiIndex = myApis.findIndex(api => api.id === id);
+
+    if (apiIndex < 0) {
+        return response.status(400).json({ error: 'Item not found.' });
+    }
+
+    myApis.splice(apiIndex, 1);
+
+    return response.status(204).send();
 });
 
 app.listen(3333, () =>{
